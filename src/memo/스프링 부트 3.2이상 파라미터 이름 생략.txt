@@ -1,0 +1,30 @@
+스프링 부트 3.2부터 자바 컴파일러에 -parameters 옵션을 넣어주어야 애노테이션의 이름을 생략할 수 있다.
+java.lang.IllegalArgumentException: Name for argument of type [java.lang.String] 
+not specified, and parameter name information not found in class file either.
+
+주로 다음 두 애노테이션에서 문제가 발생한다.
+@RequestParam , @PathVariable
+
+ex)
+@GetMapping("/members")
+public String members(@RequestParam String memberId) {
+    return memberId;
+}
+
+@RequestParam("members")의 ("members") 생략 시, 스프링 부트 3.2부터는 에러가 발생한다는 뜻이다. 
+
+해결 방법 1. 
+애노테이션에 이름을 명시한다.
+
+@GetMapping("/members")
+public String members(
+    @RequestParam("memberId") String memberId
+) {
+    return memberId;
+}
+
+해결 방법 2. -parameters 옵션 추가
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs.add("-parameters")
+}
+위를 gradle에 추가
